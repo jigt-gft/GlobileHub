@@ -1,0 +1,37 @@
+load("@npm_angular_bazel//:index.bzl", "ng_module")
+
+package(default_visibility = ["//:__subpackages__"])
+
+# We don't import from these, but the generated ngfactory code will
+NG_FACTORY_ADDED_IMPORTS = [
+    "@npm//@angular/animations",
+    "@npm//@angular/cdk",
+    "@npm//@angular/material",
+    "@npm//@angular/forms",
+]
+
+ng_module(
+    name = "app",
+    srcs = glob(["*.ts"]),
+    assets = ["app.component.html"],
+    tsconfig = "//angular-real-world/angular/src/app7:tsconfig.json",
+    deps = NG_FACTORY_ADDED_IMPORTS + [
+        "//angular-real-world/angular/src/app7/app/hello-world",
+        "@npm//@angular/core",
+        "@npm//@angular/router",
+        "@npm//@angular/platform-browser",
+        "@npm//@ngrx/store",
+        "//angular-real-world/angular/src/organisme4",
+        "//angular-real-world/angular/src/organisme2",
+    ],
+)
+
+# For testing from the root workspace of this repository with bazel_integration_test.
+filegroup(
+    name = "all_files",
+    srcs = glob(["**/*"]) + [
+        "//angular-real-world/angular/src/app7/app/hello-world:all_files",
+        "//angular-real-world/angular/src/app7/app/todos:all_files",
+        "//angular-real-world/angular/src/app7/app/home:all_files",
+    ],
+)

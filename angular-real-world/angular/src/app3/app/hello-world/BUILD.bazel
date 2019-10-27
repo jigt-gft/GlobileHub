@@ -1,0 +1,63 @@
+load("@io_bazel_rules_sass//:defs.bzl", "sass_binary")
+load("@npm_angular_bazel//:index.bzl", "ng_module")
+load("@npm_bazel_typescript//:defs.bzl", "ts_library")
+
+package(default_visibility = ["//:__subpackages__"])
+
+sass_binary(
+    name = "hello-world-styles",
+    src = "hello-world.component.scss",
+)
+
+# We don't import from these, but the generated ngfactory code will
+NG_FACTORY_ADDED_IMPORTS = [
+    "@npm//@angular/cdk",
+    "@npm//@angular/material",
+]
+
+ng_module(
+    name = "hello-world",
+    srcs = [
+        "hello-world.component.ts",
+        "hello-world.module.ts",
+    ],
+    assets = [
+        ":hello-world.component.html",
+        ":hello-world-styles",
+    ],
+    tsconfig = "//angular-real-world/angular/src/app2:tsconfig.json",
+    deps = NG_FACTORY_ADDED_IMPORTS + [
+        "//angular-real-world/angular/src/app3/app/library1",
+        "//angular-real-world/angular/src/app3/app/library2",
+        "//angular-real-world/angular/src/app3/app/library3",
+        "//angular-real-world/angular/src/app3/app/library4",
+        "//angular-real-world/angular/src/app3/shared/material",
+        "@npm//@angular/core",
+        "@npm//@angular/forms",
+        "@npm//@angular/router",
+        "@npm//date-fns",
+        
+    ],
+)
+
+ts_library(
+    name = "test_lib",
+    testonly = 1,
+    srcs = glob(["*.spec.ts"]),
+    tsconfig = "//angular-real-world/angular/src:tsconfig-test",
+    deps = [
+        ":hello-world",
+        "@npm//@angular/core",
+        "@npm//@angular/platform-browser",
+        "@npm//@angular/platform-browser-dynamic",
+        "@npm//@types/jasmine",
+        "@npm//@types/node",
+    ],
+)
+
+
+# For testing from the root workspace of this repository with bazel_integration_test.
+filegroup(
+    name = "all_files",
+    srcs = glob(["**/*"]),
+)
